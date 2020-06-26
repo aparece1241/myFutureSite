@@ -9,9 +9,22 @@
         {%block title%}
         {%endblock title%}
     </title>
-
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css'%}">
 </head>
 <body>
+    <div class="header">
+        <nav class="navi">
+            <ul class="logo">
+                <li><img src="#"></li>
+            </ul>
+            <ul class="end">
+                <li><input type="text" placeholder="search"></li>
+                <li>content1</li>
+                <li>content2</li>
+            </ul>
+        </nav>
+    </div>
     <div class="wrapper">
         {%block content%}
         {%endblock content%}
