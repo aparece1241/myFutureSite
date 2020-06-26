@@ -1,7 +1,15 @@
 {% extends 'base_layout.html'%}
 
-{% block title%}Home{%endblock title%}
+{% block title%}GamePure|Home{%endblock title%}
 
 {% block content%}
-    <h1>Hello Gamers</h1>
+    <div class="header">
+        <h1>Games</h1>
+    </div>
+    <br>
+    {% for game in games %}
+        <div class="games">
+            <h3><a href="#">{{game.name}}</a></h3>
+        </div>
+    {% endfor %}
 {% endblock content%}
