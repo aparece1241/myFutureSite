@@ -1,0 +1,18 @@
+startpage app = [
+   display all the games,
+   
+]
+gameapp = [
+   database:
+	id,
+	name,
+	description,
+	date_published,
+	author,
+	slug,
+	images,
+	game,
+	category,
+   templates
+   
+]
