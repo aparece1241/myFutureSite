@@ -16,3 +16,7 @@ def game_list(request):
 def details(request,slug):
     game = Game.objects.get(slug = slug)
     return render(request,'Game/details.html',{'game':game})
+
+
+
+
