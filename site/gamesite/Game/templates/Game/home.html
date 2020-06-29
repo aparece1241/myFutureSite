@@ -5,11 +5,13 @@
 {% block content%}
     <div class="header">
         <h1>Games</h1>
+        <input type="text" placeholder="search">
     </div>
     <br>
     {% for game in games %}
         <div class="games">
-            <h3><a href="#">{{game.name}}</a></h3>
+            <h3><a href="{% url 'Game:details' game.slug%}">{{game.name}}</a></h3>
         </div>
     {% endfor %}
 {% endblock content%}
+

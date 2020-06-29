@@ -1,0 +1,10 @@
+{% extends 'base_layout.html' %}
+
+{% block title %}
+    Game details
+{% endblock title %}
+
+{% block content %}
+    <img src = '{{game.game_images.url}}'>
+    <h1>{{game.name}}</h1>
+{% endblock content %}
