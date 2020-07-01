@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from .models import Game
 from . import forms
@@ -18,6 +19,7 @@ def details(request,slug):
     game = Game.objects.get(slug = slug)
     return render(request,'Game/details.html',{'game':game})
 
+@login_required(login_url='Account:login')
 def upload_game(request):
     if request.method == "POST":
         form = forms.UploadGame(data=request.POST)

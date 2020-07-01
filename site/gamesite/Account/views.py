@@ -9,7 +9,11 @@ def log_in(request):
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             log(request,form.get_user())
-            return redirect('Game:home')
+            if 'next' in request.POST:
+                return redirect(request.POST.get('next'))
+            else:
+                return redirect('Game:home')
+
     else:
         form = AuthenticationForm()
     return render(request,'Account/login.html',{'form':form})
