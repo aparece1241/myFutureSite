@@ -1,0 +1,10 @@
+{% extends 'base.html'%}
+{%block title%}Test
+{%endblock title%}
+{%block content%}
+    <form action="{%url 'Game:upload' %}" enctype="multipart/form-data" method="post">
+        {%csrf_token%}
+        {{form}}
+        <input type="submit" value="Upload">
+    </form>
+{%endblock content%}

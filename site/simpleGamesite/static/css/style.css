@@ -1,0 +1,23 @@
+body{
+    background-color:#384c6e;
+    font-family: cursive;
+}
+
+.header{
+    border-bottom: solid 2px lightblue;
+}
+
+li{
+    list-style:none;
+    margin-right: 30px;
+    float:right;
+}
+
+ul{
+    display:inline;
+}
+
+
+nav ul li,#logo{
+    display:inline;
+}
