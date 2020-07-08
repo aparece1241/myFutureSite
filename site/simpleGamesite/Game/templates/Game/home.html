@@ -3,12 +3,16 @@
 Home
 {% endblock title%}
 {% block content%}
-    <h1>This the homepage</h1>
-    <div>
+    <h1>Welcome to GamePur</h1>
+    <input type="text" placeholder="search ...">
+    <div class="cont">
         {%for game in games%}
         <div class="game-cont">
-        <a href="{% url 'Game:details' game.slug %}">{{game.name}}</a>
-        <img src="{{game.image.url}}">
+            <a href="{% url 'Game:details' game.slug %}"><h2 class="game-title">{{game.name}}</h2></a>
+        <img class="game-image" src="{{game.image.url}}">
+        <a href="#" class="play-btn">Play</a>
+        <a href="{% url 'Game:details' game.slug %}" class="des-btn">Description</a>
+
         </div>
         {% endfor %}
     </div>

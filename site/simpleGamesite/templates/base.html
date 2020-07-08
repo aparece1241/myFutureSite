@@ -13,21 +13,25 @@
 <body>
     <div class="header">
         {%block header %}
-        <img id="logo" src="{%static 'img/logo1.png'%}">
-        <nav>
-            <ul>
-                {% if user.is_authenticated %}
-                <li><a href="{% url 'Account:logout' %}">Logout</a></li>
-                <li><a href="{% url 'Game:upload' %}">Upload</a></li>
+    <div class="topnav">
+        <a href="{% url 'Game:home' %}"><img id="logo" src="{%static 'img/logo1.png'%}"></a>
+        <div class="topnav-right">
+            {% if user.is_authenticated %}
+                <a href="{% url 'Account:logout' %}">Logout</a>
+                <a href="{% url 'Game:upload' %}">Upload</a>
                 {% else %}
-                <li><a href="{% url 'Account:login' %}">Login</a></li>
-                <li><a href="{% url 'Account:signup' %}">Signup</a></li>
-                {%endif%}
-            </ul>
-        </nav>
+                <a href="{% url 'Account:login' %}">Login</a>
+                <a href="{% url 'Account:signup' %}">Signup</a>
+            {%endif%}
+        </div>
+    </div>
         {%endblock header %}
     </div>
+        <br>
+        <br>
+        <br>
     <div class="wrapper">
+        <hr>
         {%block content%}
         {%endblock content%}
     </div>
