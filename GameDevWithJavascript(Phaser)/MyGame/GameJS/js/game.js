@@ -1,3 +1,4 @@
+
 /// <reference path="../typings/phaser.d.ts" />
 
 let config = {
@@ -6,7 +7,7 @@ let config = {
     height: "100%",
     parent: 'gameArea',
     backgroundColor: 0x0FF6347,
-    scene: [Boot,Menu]
+    scene: [Boot,Menu,Play]
 }
 window.onload = function () {
     var game = new Phaser.Game(config);

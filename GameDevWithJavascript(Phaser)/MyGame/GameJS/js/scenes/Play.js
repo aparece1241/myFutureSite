@@ -1,3 +1,4 @@
+
 /// <reference path = "../../typings/phaser.d.ts"/>
 
 class Play extends Phaser.Scene {
