@@ -8,7 +8,9 @@ class Boot extends Phaser.Scene {
         this.load.spritesheet("jewels","../../assets/gems.png",{frameWidth:60,frameHeight:68});
         this.load.image("play","../../assets/play.png");
         this.load.image("option","../../assets/option.png");
-        this.load.image("finder","../../assets/finder.png")
+        this.load.image("finder","../../assets/finder.png");
+        this.load.spritesheet("diamonds","../../assets/diamonds.png",{frameWidth:32,frameHeight:24});
+        this.load.image("platform","../../assets/platform.png");
     }
     create () {
         this.add.text(20,20,"loading ...");   
