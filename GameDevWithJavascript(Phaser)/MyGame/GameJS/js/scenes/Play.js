@@ -2,7 +2,10 @@
 /// <reference path = "../../typings/phaser.d.ts"/>
 
 
-var id;
+let id;
+let firstChoose;
+let secondChoose;
+let globalCounter = 0;
 class Play extends Phaser.Scene {
 
     constructor() {
@@ -21,14 +24,12 @@ class Play extends Phaser.Scene {
         for (let i = 0; i < 10; i++) {
             let f = i;
             let y = i;
-            if (i > 5) {
-                f = i - 5;
-            }
+            
             for (let b = 0; b < 10; b++) {
                 if (i > 5) {
                     f = i - 5;
                 }
-                this.PositionArray.push({ x: 200 + (35 * (y + 1)), y: 200 + (35 * (b + 1)) })
+                this.PositionArray.push({ x: 200 + (35 * (y + 1)), y: 200 + (35 * (b + 1)), f : f })
                 this.gem = this.add.sprite(200 + (35 * (y + 1)), 200 + (35 * (b + 1)), "diamonds", frames = f);
                 this.gems.add(this.gem);
             }
@@ -47,17 +48,29 @@ class Play extends Phaser.Scene {
         this.physics.add.collider(this.gems, this.platform);
         this.gems.world.gravity.y = 0;
 
+
         this.sprite = this.gems.children.entries[0].setInteractive();
+        
+        
         this.input.on("pointerdown", function (pointer) {
+        
             let counter = 0;
-            console.log(this.PositionArray)
-            console.log("x : " + pointer.position.x, "y : " + pointer.position.y)
+        
+        
+            // console.log(this.PositionArray,this)
+            // console.log("x : " + pointer.position.x, "y : " + pointer.position.y)
+        
+        
             this.PositionArray.forEach(element => {
+        
                 if (element.x - 16 <= pointer.position.x && element.x + 16 >= pointer.position.x) {
+        
                     if (element.y - 16 <= pointer.position.y && element.y + 16 >= pointer.position.y) {
-                        console.log("filtered: " + element.x, element.y, counter);
+                        // console.log("filtered: " + element.x, element.y, counter);
                         id = counter;
+                        changeTint(id,this.gems,this.PositionArray,this);
                     }
+        
                 }
                 counter++;
             });
@@ -66,9 +79,52 @@ class Play extends Phaser.Scene {
     }
 }
 
-function lock(id,gems){
+function changeTint(id,gems,PositionArray,game){   
+    gems.children.entries[id].tint = 0x000FAB0; 
+    // console.log(gems.children.entries[id].tint);
+    if(globalCounter % 2 == 0){
+        firstChoose = id;
+    }else{
+        secondChoose = id;
+        console.log(game);
+        tween(firstChoose,secondChoose,gems,PositionArray,game)
+    }
+    globalCounter++; 
+    // console.log("first: " + firstChoose,"second: "+secondChoose);
+}
+
+function tween(first,second,gems,PositionArray,game){
+    let sprite1 = gems.children.entries[0];
+    let sprite2 = gems.children.entries[second];
+    let Fx;
+    let Fy;
+    let Sx;
+    let Sy = 235;
+    let yoy = false;
+
+    game.add.tween({
+        targets: [sprite1],
+        x: Sx,
+        y: Sy,
+        duration: 2000,
+        ease: 'Sine.easeInOut',
+        yoyo: yoy
+    });
+
+    // this.add.tween({
+    //     targets: [sprite2],
+    //     x: Fx,
+    //     y: Fy,
+    //     duration: 1000,
+    //     ease: 'Sine.easeInOut',
+    //     yoyo: yoy
+    // });
+    console.log(PositionArray[first])
+    console.log(PositionArray[second])
 
 }
+
+
 
 
 
