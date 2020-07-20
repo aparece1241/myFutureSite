@@ -14,13 +14,18 @@ class Play extends Phaser.Scene {
 
         this.add.image(0, 0, "background").setOrigin(0).setScale(1.5);
         prepareGlass(level, this, this.sys.game.canvas, level, Positions);
+        console.log(Positions);
         ball = this.add.image(0, 450, "ball").setScale(1);
         shuffle(level, this, Positions);
-        putIntheRightPos(shuffleArray(Positions),Positions);
 
         this.score = this.add.text(50, 50, "Score: " + score, { fill: "black", fontSize: 25 });
         this.level = this.add.text(50, 100, "Level: " + level, { fill: "black", fontSize: 25 });
         ball.x = Positions[0].x;
+
+
+        this.input.on('pointerdown',function(pointer){
+            getTheCup(pointer,Positions);
+        });
 
     }
 
@@ -30,6 +35,7 @@ class Play extends Phaser.Scene {
 
 
 
+// this part is to shuffle the cups
 
 function shuffle(level, game, positionArray) {
     trueLev = level;
@@ -75,45 +81,48 @@ function shuffle(level, game, positionArray) {
         onRepeat: function (tween) {
             tween.updateTo("targets",positionArray[id2].sprite);
             tween.updateTo("x",positionArray[id1].x);
+        },
+        onComplete: function(){
+            putIntheRightPos(positionArray)
         }
 
     });
 
 }
 
+    
 
+// this part is to set the in a good positions no cup is above on the other
 
-
-function shuffleArray(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
-  
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-  
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-  
-      
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-  
-    return array;
-  }
-  
-  
-
-function putIntheRightPos(positionArray1,positionArray2){
-    console.log(positionArray1,positionArray2);
-    for(let ctr = 0; ctr < positionArray1.length; ctr++){
-        positionArray1[ctr].sprite.x = positionArray2[ctr].x;
-    }
+function putIntheRightPos(positionArray1){
+    console.log("Im here");
+        for(let i = 0; i < positionArray1.length; i++){
+            positionArray1[i].sprite.x = positionArray1[i].x;
+        }
 }
 
 // https://rexrainbow.github.io/phaser3-rex-notes/docs/site/tween/
 
 
+// this is to get the cup that is being clicked
+function getTheCup(pointerPos,positionArray){
+    let id = 0;
+    let width = positionArray[0].sprite.width/2;
+    let height = positionArray[0].sprite.height/2;
+    positionArray.forEach(element => {
+        if(element.x + width < pointerPos.x && pointerPos.x > element.x - width ){
+            if(element.y + height > pointerPos.y && pointerPos.y < element.y - height){
+                console.log(width,height,element.x,element.y,pointerPos.x,pointerPos.y,id);
+            }
+        }
+        id++;
+    });
+    
+}
+
+
+
+// this is to prepare the glass or cups
 function prepareGlass(level, game, position, trueLev, positionArray) {
     let scale = 4;
     let percent = .65;
