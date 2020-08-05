@@ -13,13 +13,14 @@ let F2 = [];
 let F3 = [];
 let F4 = [];
 let frameArray = [F0, F1, F2, F3, F4];
+let PositionArray = [];
 class Play extends Phaser.Scene {
 
     constructor() {
         super("Play");
     }
+    loaded = false;
     gems;
-    PositionArray = [];
     create() {
         // this creates the platform of the game the color brown one
         this.platform = this.physics.add.staticGroup();
@@ -41,44 +42,83 @@ class Play extends Phaser.Scene {
                 }
                 let frame = Phaser.Math.Between(0, 4);
                 this.gem = this.add.sprite(200 + (35 * (y + 1)), 200 + (35 * (b + 1)), "diamonds", frames = frame);
-                this.PositionArray.push({ x: 200 + (35 * (y + 1)), y: 200 + (35 * (b + 1)), f: frame, id: ids,sprite: this.gem})
+                PositionArray.push({ x: 200 + (35 * (y + 1)), y: 200 + (35 * (b + 1)), f: frame, id: ids, sprite: this.gem})
                 this.gems.add(this.gem);
                 ids++;
             }
         }
-        console.log(this.gems);
+        this.loaded = true;
+        // console.log(this.gems);
 
 
         this.physics.add.collider(this.gems, this.platform);
         this.gems.world.gravity.y = 0;
 
+
+        /**
+         * this part here gets the mouse and calculate
+         * if it hits one of the gems 
+         * 
+         * and if it does, then it will save the info of the click gems
+         * 
+         * 
+         * params @pointer
+         */
+
         this.input.on("pointerdown", function (pointer) {
 
             let counter = 0;
 
-            this.PositionArray.forEach(element => {
+            /**
+             * this loop will check if the mouse input is clicking
+             * some of the 
+             * gems 
+            */
 
+            PositionArray.forEach(element => {
                 if (element.x - 16 <= pointer.position.x && element.x + 16 >= pointer.position.x) {
 
                     if (element.y - 16 <= pointer.position.y && element.y + 16 >= pointer.position.y) {
-                        id = this.PositionArray[counter].id;
+                        id = PositionArray[counter].id;
+
+                        /**
+                         * this consecutive if else statement is responsible for checking 
+                         * the clicked input to be exact.
+                         * 
+                         * 
+                         * It also check if the choosen variable
+                         */
+
 
                         if (globalBol) {
+
                             firstChoose = id;
-                            if (firstChoose != firstIdChoosen) {
+                            if (firstChoose == firstIdChoosen) {
+                                firstChoose = undefined;
+                                globalBol = true;
+                            } else {
+                                secondChoose = undefined;
                                 globalBol = false;
                             }
+
                         } else {
-                            firstIdChoosen = secondChoose;
+
                             secondChoose = id;
-                            globalBol = true;
-                            //call the function here
-                            tween(firstChoose, secondChoose, this.PositionArray, this);
-                            firstChoose = undefined;
-                            secondChoose = undefined;
+                            if (secondChoose != firstChoose) {
+                                firstIdChoosen = secondChoose;
+                                globalBol = true;
+                            } else {
+                                secondChoose = undefined;
+                            }
 
                         }
-                        check(this.PositionArray);
+                        console.log(PositionArray[id]);
+                        // console.log("first:", firstChoose, "second:", secondChoose, globalBol);
+                        if (firstChoose != undefined && secondChoose != undefined) {
+                            console.log(firstChoose, secondChoose);
+                            tween(firstChoose, secondChoose,PositionArray, this);
+                        }
+
                     }
 
                 }
@@ -88,112 +128,208 @@ class Play extends Phaser.Scene {
     }
 
     update() {
-
+        if (this.loaded) {
+            check(PositionArray);
+            this.loaded = false;
+        }
     }
 }
 
 
 function addGems() {
+    //in this function whenever there is a culomn that is break this function will be called
+    //this function will create gems and put in the top part of the puzzle
 
 }
 
 
-function check(PositionArray) {
-    let counter = 0;
+function check(positionArray) {
+    /**
+     * this function is called whenever the user click the gem(it is just for now)
+     * this function does was to extract,check, and segregate
+     * the different kind of frames (i'm reffernig frames as colors )
+     */
     for (let ctr = 0; ctr < 5; ctr++) {
-        for (let i = 0; i < PositionArray.length; i++) {
-            if (ctr == PositionArray[i].f) {
-                frameArray[ctr].push(PositionArray[i].id);
+        for (let i = 0; i < positionArray.length; i++) {
+            if (ctr == positionArray[i].f) {
+                frameArray[ctr].push(positionArray[i].id);
             }
         }
     }
-    find(frameArray,PositionArray);
+    find(frameArray, positionArray);
 
 }
-function find(frameArray,positionArray) {
-    let counterx = 0;
-    let countery = 0;
+
+
+function find(frameArray, positionArray) {
+
+    /**
+     * this function will be called whenever the check function is done
+     * this function does a very important role in checking
+     * when there are three or more gems that are align
+     */
+
+    // this is a variable that will holds the cloned frame array. Its porpuse was for checking 
+    let clonedArrayX;
+    // same goes with this variable
+    let clonedArrayY;
+
     for (let index = 0; index < frameArray.length; index++) {
-        for (let ctr = 0; ctr < frameArray[index].length; ctr++) {
+
+        clonedArrayX = clonedArrayY = frameArray[index]; // intializing the variable for clone array
+        for (let ctr = 0; ctr < clonedArrayX.length; ctr++) { //looping througth the cloned array
+
+
+            //====================================//
+            //====================================//
+            //====================================//
             // this is for the x axis of the game
-            console.log("FrameArray Index",frameArray[index], index);
+            //====================================//
+            //====================================//
+            //====================================//
+
+
+            // this will count the aligned colors. If its greater than three then it will be qualified 
+
             let Counter = 1;
-            let ByTen = frameArray[index][ctr] + 10;
-            // while (true) {
-            //     if (customizedIn(frameArray[index], ByTen)) {
-            //         ByTen = ByTen + 10;
-            //         Counter++;
-            //     } else {
-            //         break;
-            //     }
-            // }
-            while (customizedIn(frameArray[index], ByTen)) {
-                    ByTen = ByTen + 10;
-                    Counter++;
-            }
-            if (Counter > 2) {
-                tintChoosen(Counter,frameArray[index][ctr],positionArray,10);
-                console.log("X Counter:", Counter, "id:", frameArray[index][ctr], "frame:", index);
+
+            // in x axis the the id number of the frames is iterated by ten
+
+            let ByTen = clonedArrayX[ctr] + 10;
+
+            // this loop will continue to loop until this parameter is true "customizedIn(clonedArrayX, ByTen)"
+
+            while (customizedIn(clonedArrayX, ByTen)) {
+                //if the parameter is true 
+                //it will iterate Byten and the counter
+                ByTen = ByTen + 10;
+                Counter++;
             }
 
+            //checking if the counter is greater than 2
+            if (Counter > 2) {
+                // if its true then it will call
+                // the temporary function "tintChoose()"
+                tintChoosen(Counter, clonedArrayX[ctr], positionArray, 10, clonedArrayX);
+            }
+
+
+        }
+
+        for (let ctr = 0; ctr < clonedArrayY.length; ctr++) {
+
+
+            //====================================//
+            //====================================//
+            //====================================//
             //this is for the y axis of the game
+            //====================================//
+            //====================================//
+            //====================================//
+
 
             let yCounter = 1;
-            let ByOne = frameArray[index][ctr] + 1;
-            let boudary = [9,19,29,39,49,59,69,79,89,99];
-            while (true) {
-                if (customizedIn(frameArray[index], ByOne)) {
-                    ByOne = ByOne + 1;
-                    yCounter++;
-                }
-                else {
+
+            // initialized the variable ByOne
+            let ByOne = clonedArrayY[ctr] + 1;
+
+            // this variable holds the the indexes of the boundary
+            let boudary = [9, 19, 29, 39, 49, 59, 69, 79, 89, 99];
+
+            while (customizedIn(clonedArrayY, ByOne)) {
+                // for decription of this loop see the loop 
+                // for x axis above
+
+                /**
+                 * this statement will check if the value of
+                 * ByOne is in the boundary
+                 * if it does then it will break the loop
+                 * to stop the counter from iterating
+                 */
+
+                if (customizedIn(boudary, ByOne - 1)) {
                     break;
                 }
+                ByOne = ByOne + 1;
+                yCounter++;
             }
             if (yCounter > 2) {
-                tintChoosen(yCounter,frameArray[index][ctr],positionArray,1);
-                console.log("Y Counter:", yCounter, "id:", frameArray[index][ctr], "frame:", index);
+                tintChoosen(yCounter, clonedArrayY[ctr], positionArray, 1, clonedArrayY);
             }
+
+
         }
     }
+
+
+
 }
 
 
 function customizedIn(frame, val) {
-    let returnValue = false;
+
+    // this function will check if the val param
+    // is in the frame (frame here is an array)
+    // if it does then this function will return true
+
     for (let fs of frame) {
         if (fs == val) {
-            // return true;
-            returnValue = true;
+            return true;
         }
-    }    
-    // return false;
-    return returnValue;
+    }
+    return false;
+
 }
 
 
 
-function tintChoosen(counter,id,positionArray,by){
-    for(let ctr = 0;ctr < counter;ctr++){
-        positionArray[id].sprite.tint = 0x00000;
+function tintChoosen(counter, id, positionArray, by, clonedArray) {
+
+    /**
+     * this function is a temporary function
+     * the parameter counter,id, and by are integer
+     * positionArray and clonedArray are array
+     * this function will just change the color of the gem 
+     * (supposed to erase the gems)
+     */
+
+    // this for loop will destroy the the choosen gems by its id
+    for (let ctr = 0; ctr < counter; ctr++) {
+
+        // this part will destroy the choosen gems
+        // positionArray[id].sprite.destroy(true);
+
+        clonedArray.splice(clonedArray.findIndex(arrElem => { return arrElem == id; }), 1);
         id = id + by;
+
     }
 }
 
-function tween(first, second, PositionArray, game) {
 
-    let sprite1 = PositionArray[first].sprite;
-    let sprite2 = PositionArray[second].sprite;
-    let Fx = PositionArray[first].x;
-    let Fy = PositionArray[first].y;
-    let Sx = PositionArray[second].x;
-    let Sy = PositionArray[second].y;
-    let Ff = PositionArray[first].f;
-    let Sf = PositionArray[second].f;
-    let Fid = PositionArray[first].id;
-    let Sid = PositionArray[second].id;
 
-    console.log("first:", first, "second:", second);
+
+function tween(first, second, positionArray, game) {
+
+    /**
+     * this function is resposible for the movement in gems
+     * this will be called when the mouse clicks in the gems
+     */
+
+    let sprite1 = positionArray[first].sprite;
+    let sprite2 = positionArray[second].sprite;
+
+    let Fx = positionArray[first].x;
+    let Fy = positionArray[first].y;
+
+    let Sx = positionArray[second].x;
+    let Sy = positionArray[second].y;
+
+    let Frx = positionArray[first].f;
+    let Fry = positionArray[second].f;
+
+
+    let Fid = positionArray[first].id;
+    let Sid = positionArray[second].id;
 
     game.add.tween({
         targets: [sprite1],
@@ -201,7 +337,15 @@ function tween(first, second, PositionArray, game) {
         y: Sy,
         duration: 250,
         ease: 'Linear',
-        yoyo: yoy
+        yoyo: yoy,
+        onComplete: function () {
+            firstChoose = undefined;
+
+            positionArray[first].id = Sid;
+            positionArray[first].x = Sx;
+            positionArray[first].y = Sy;
+            positionArray[first].f = Fry;
+        }
     });
 
     game.add.tween({
@@ -210,12 +354,22 @@ function tween(first, second, PositionArray, game) {
         y: Fy,
         duration: 250,
         ease: 'Linear',
-        yoyo: yoy
+        yoyo: yoy,
+        onComplete: function () {
+            secondChoose = undefined;
+
+            positionArray[second].id = Fid;
+            positionArray[second].x = Fx;
+            positionArray[second].y = Fy;
+            positionArray[second].f = Frx;
+        }
     });
 
-    PositionArray[first] = { x: Sx, y: Sy, f: Ff, id: Fid,sprite: sprite2}
-    PositionArray[second] = { x: Fx, y: Fy, f: Sf, id: Sid,sprite: sprite1 }
-    console.log("first:", PositionArray[first], "second:", PositionArray[second]);
+    // PositionArray[first] = { x: Sx, y: Sy, f: Ff, id: Sid, sprite: sprite2 }
+    // PositionArray[second] = { x: Fx, y: Fy, f: Sf, id: Fid, sprite: sprite1 }
+    console.log("x:", Fx, "y:",Fy);
+    console.log("x:", Sx, "y:",Sy);
+    console.log(PositionArray);
 }
 
 
