@@ -5,7 +5,7 @@ let score = 0;
 let id;
 let firstChoose;
 let secondChoose;
-let globalBol = true;
+let isSec = true;
 let yoy = false;
 let F0 = [];
 let F1 = [];
@@ -28,7 +28,7 @@ class Play extends Phaser.Scene {
 
         //this makes the platform more bigger because the actual size of the image was small
         this.platform.create(400, 600, 'platform').setScale(5).refreshBody()
-        let firstIdChoosen; //this variable stores the id of the first gem that is being clicked
+        // let firstIdChoosen; //this variable stores the id of the first gem that is being clicked
         let ids = 0;// this variable will store the future ids of the gems
         this.gems = this.physics.add.group(); // this is the initialization of the group of gems put inside a variable named gems
 
@@ -42,7 +42,7 @@ class Play extends Phaser.Scene {
                 }
                 let frame = Phaser.Math.Between(0, 4);
                 this.gem = this.add.sprite(200 + (35 * (y + 1)), 200 + (35 * (b + 1)), "diamonds", frames = frame);
-                PositionArray.push({ x: 200 + (35 * (y + 1)), y: 200 + (35 * (b + 1)), f: frame, id: ids, sprite: this.gem})
+                PositionArray.push({ x: 200 + (35 * (y + 1)), y: 200 + (35 * (b + 1)), f: frame, id: ids, sprite: this.gem })
                 this.gems.add(this.gem);
                 ids++;
             }
@@ -80,6 +80,8 @@ class Play extends Phaser.Scene {
 
                     if (element.y - 16 <= pointer.position.y && element.y + 16 >= pointer.position.y) {
                         id = PositionArray[counter].id;
+                        console.log(counter);
+                        // check(PositionArray);
 
                         /**
                          * this consecutive if else statement is responsible for checking 
@@ -88,37 +90,20 @@ class Play extends Phaser.Scene {
                          * 
                          * It also check if the choosen variable
                          */
-
-
-                        if (globalBol) {
-
+                        if (isSec) {
                             firstChoose = id;
-                            if (firstChoose == firstIdChoosen) {
-                                firstChoose = undefined;
-                                globalBol = true;
-                            } else {
-                                secondChoose = undefined;
-                                globalBol = false;
-                            }
-
+                            isSec = false;
                         } else {
-
                             secondChoose = id;
-                            if (secondChoose != firstChoose) {
-                                firstIdChoosen = secondChoose;
-                                globalBol = true;
-                            } else {
-                                secondChoose = undefined;
-                            }
+                            isSec = true;
 
-                        }
-                        console.log(PositionArray[id]);
-                        // console.log("first:", firstChoose, "second:", secondChoose, globalBol);
-                        if (firstChoose != undefined && secondChoose != undefined) {
-                            console.log(firstChoose, secondChoose);
-                            tween(firstChoose, secondChoose,PositionArray, this);
-                        }
+                            // console.log(valid_choose(firstChoose,secondChoose));
+                            // if (valid_choose(firstChoose, secondChoose)) {
+                            //     tween(firstChoose, secondChoose);
+                            // } else {
 
+                            // }
+                        }
                     }
 
                 }
@@ -129,11 +114,83 @@ class Play extends Phaser.Scene {
 
     update() {
         if (this.loaded) {
-            check(PositionArray);
+            // check(PositionArray);
             this.loaded = false;
         }
     }
 }
+
+
+
+function valid_choose(first, second) {
+/**
+ * check the posiblity of what the player 
+ * will choose in the second choose
+ */
+
+    let boundaries = [[1, 2, 3, 4, 5, 6, 7, 8, 91, 92, 93, 94, 95, 96, 97, 98],[10, 20, 30, 40, 50, 60, 70, 80, 19, 29, 39, 49, 59, 69, 79, 89], [0, 9, 90, 99]];
+    let left = true;
+    let right = true;
+    let down = true;
+    let up = true;
+
+    for(let ctr = 0;ctr < boundaries.length; ctr++){
+        if(customizedIn(boundaries[ctr], first)){
+            switch (ctr) {
+                case 0: 
+                    if(0 < first < 9){
+                        left = false;
+                    }else if(90 < first < 99){
+                        right = false;
+                    }
+                    break;
+
+                case 1:
+                    if(first % 2 == 0){
+                        up = false;
+                    }else{
+                        down = false;
+                    }
+                    break;
+
+                case 2:
+                    switch (first) {
+                        case 0:
+                            left = false;
+                            up = false;
+                            break;
+                        
+                        case 9:
+                            left = false;
+                            down = false;
+                            break;
+                        case 90:
+                            right = false;
+                            up = false;
+                            break;
+                        case 99:
+                            right = false;
+                            down = false;
+                    }  
+
+                    break;
+            }
+            break;
+        }
+
+        
+    }
+
+}
+
+
+
+
+
+
+
+
+
 
 
 function addGems() {
@@ -176,7 +233,8 @@ function find(frameArray, positionArray) {
 
     for (let index = 0; index < frameArray.length; index++) {
 
-        clonedArrayX = clonedArrayY = frameArray[index]; // intializing the variable for clone array
+        clonedArrayX = frameArray[index]; // intializing the variable for clone array
+        clonedArrayY = frameArray[index];
         for (let ctr = 0; ctr < clonedArrayX.length; ctr++) { //looping througth the cloned array
 
 
@@ -341,8 +399,8 @@ function tween(first, second, positionArray, game) {
         onComplete: function () {
             firstChoose = undefined;
 
-            positionArray[first].id = Sid;
             positionArray[first].x = Sx;
+            positionArray[first].id = Sid;
             positionArray[first].y = Sy;
             positionArray[first].f = Fry;
         }
@@ -367,13 +425,37 @@ function tween(first, second, positionArray, game) {
 
     // PositionArray[first] = { x: Sx, y: Sy, f: Ff, id: Sid, sprite: sprite2 }
     // PositionArray[second] = { x: Fx, y: Fy, f: Sf, id: Fid, sprite: sprite1 }
-    console.log("x:", Fx, "y:",Fy);
-    console.log("x:", Sx, "y:",Sy);
+    console.log("x:", Fx, "y:", Fy);
+    console.log("x:", Sx, "y:", Sy);
     console.log(PositionArray);
 }
 
 
-    // https://phaser.io/examples/v3/view/game-objects/lights/spotlight
+// if (globalBol) {
 
+//     firstChoose = id;
+//     if (firstChoose == firstIdChoosen) {
+//         firstChoose = undefined;
+//         globalBol = true;
+//     } else {
+//         secondChoose = undefined;
+//         globalBol = false;
+//     }
 
-    // https://www.youtube.com/watch?v=VhgqYw6h9Bg
+// } else {
+
+//     secondChoose = id;
+//     if (secondChoose != firstChoose) {
+//         firstIdChoosen = secondChoose;
+//         globalBol = true;
+//     } else {
+//         secondChoose = undefined;
+//     }
+
+// }
+// console.log(PositionArray[id]);
+// // console.log("first:", firstChoose, "second:", secondChoose, globalBol);
+// if (firstChoose != undefined && secondChoose != undefined) {
+//     console.log(firstChoose, secondChoose);
+//     tween(firstChoose, secondChoose,PositionArray, this);
+// }
