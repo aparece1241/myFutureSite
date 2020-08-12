@@ -79,8 +79,8 @@ class Play extends Phaser.Scene {
                 if (element.x - 16 <= pointer.position.x && element.x + 16 >= pointer.position.x) {
 
                     if (element.y - 16 <= pointer.position.y && element.y + 16 >= pointer.position.y) {
-                        id = PositionArray[counter].id;
-                        console.log(counter);
+                        id = counter;
+                        console.log("id:", PositionArray[counter].id, "couter", counter);
                         // check(PositionArray);
 
                         /**
@@ -95,15 +95,20 @@ class Play extends Phaser.Scene {
                             isSec = false;
                         } else {
                             secondChoose = id;
-                            isSec = true;
-
-                            // console.log(valid_choose(firstChoose,secondChoose));
-                            // if (valid_choose(firstChoose, secondChoose)) {
-                            //     tween(firstChoose, secondChoose);
-                            // } else {
-
-                            // }
                         }
+
+                        console.log(firstChoose, secondChoose);
+                        if (secondChoose != undefined) {
+                            if (valid_choose(PositionArray[firstChoose].id, PositionArray[secondChoose].id)) {
+                                tween(firstChoose, secondChoose, PositionArray, this);
+                                // firstChoose = undefined;
+                                isSec = true;
+                            } else {
+                                console.log(false);
+                                isSec = valid_choose(firstChoose, secondChoose);
+                            }
+                        }
+
                     }
 
                 }
@@ -123,32 +128,35 @@ class Play extends Phaser.Scene {
 
 
 function valid_choose(first, second) {
-/**
- * check the posiblity of what the player 
- * will choose in the second choose
- */
+    /**
+     * check the posiblity of what the player 
+     * will choose in the second choose
+     */
 
-    let boundaries = [[1, 2, 3, 4, 5, 6, 7, 8, 91, 92, 93, 94, 95, 96, 97, 98],[10, 20, 30, 40, 50, 60, 70, 80, 19, 29, 39, 49, 59, 69, 79, 89], [0, 9, 90, 99]];
+    let boundaries = [[1, 2, 3, 4, 5, 6, 7, 8, 91, 92, 93, 94, 95, 96, 97, 98], [10, 20, 30, 40, 50, 60, 70, 80, 19, 29, 39, 49, 59, 69, 79, 89], [0, 9, 90, 99]];
     let left = true;
     let right = true;
     let down = true;
     let up = true;
 
-    for(let ctr = 0;ctr < boundaries.length; ctr++){
-        if(customizedIn(boundaries[ctr], first)){
+    if (second == undefined) {
+        return false;
+    }
+    for (let ctr = 0; ctr < boundaries.length; ctr++) {
+        if (customizedIn(boundaries[ctr], first)) {
             switch (ctr) {
-                case 0: 
-                    if(0 < first < 9){
+                case 0:
+                    if (0 < first < 9) {
                         left = false;
-                    }else if(90 < first < 99){
+                    } else if (90 < first < 99) {
                         right = false;
                     }
                     break;
 
                 case 1:
-                    if(first % 2 == 0){
+                    if (first % 2 == 0) {
                         up = false;
-                    }else{
+                    } else {
                         down = false;
                     }
                     break;
@@ -159,7 +167,7 @@ function valid_choose(first, second) {
                             left = false;
                             up = false;
                             break;
-                        
+
                         case 9:
                             left = false;
                             down = false;
@@ -171,16 +179,34 @@ function valid_choose(first, second) {
                         case 99:
                             right = false;
                             down = false;
-                    }  
+                    }
 
                     break;
             }
             break;
         }
-
-        
     }
 
+    if (validate_extention(left, right, up, down, first, second)) {
+        return true;
+    } else {
+        return false;
+    }
+
+}
+function validate_extention(left, right, up, down, first, second) {
+    if (left) {
+        if (first - 10 == second) { return true; }
+    }
+    if (right) {
+        if (first + 10 == second) { return true; }
+    }
+    if (up) {
+        if (first - 1 == second) { return true; }
+    }
+    if (down) {
+        if (first + 1 == second) { return true; }
+    }
 }
 
 
@@ -372,7 +398,7 @@ function tween(first, second, positionArray, game) {
      * this function is resposible for the movement in gems
      * this will be called when the mouse clicks in the gems
      */
-
+    console.log(positionArray[first], first);
     let sprite1 = positionArray[first].sprite;
     let sprite2 = positionArray[second].sprite;
 
@@ -397,12 +423,15 @@ function tween(first, second, positionArray, game) {
         ease: 'Linear',
         yoyo: yoy,
         onComplete: function () {
-            firstChoose = undefined;
+            // firstChoose = undefined;
 
             positionArray[first].x = Sx;
             positionArray[first].id = Sid;
             positionArray[first].y = Sy;
             positionArray[first].f = Fry;
+
+
+            // positionArray[first] = {x: Sx,y: Sy,f: Fry, id: Sid, sprite: sprite2}
         }
     });
 
@@ -420,6 +449,8 @@ function tween(first, second, positionArray, game) {
             positionArray[second].x = Fx;
             positionArray[second].y = Fy;
             positionArray[second].f = Frx;
+
+            // positionArray[second] = {x: Fx,y: Fy,f: Frx, id: Fid, sprite: sprite1}
         }
     });
 
@@ -427,35 +458,5 @@ function tween(first, second, positionArray, game) {
     // PositionArray[second] = { x: Fx, y: Fy, f: Sf, id: Fid, sprite: sprite1 }
     console.log("x:", Fx, "y:", Fy);
     console.log("x:", Sx, "y:", Sy);
-    console.log(PositionArray);
+    console.log(PositionArray, positionArray);
 }
-
-
-// if (globalBol) {
-
-//     firstChoose = id;
-//     if (firstChoose == firstIdChoosen) {
-//         firstChoose = undefined;
-//         globalBol = true;
-//     } else {
-//         secondChoose = undefined;
-//         globalBol = false;
-//     }
-
-// } else {
-
-//     secondChoose = id;
-//     if (secondChoose != firstChoose) {
-//         firstIdChoosen = secondChoose;
-//         globalBol = true;
-//     } else {
-//         secondChoose = undefined;
-//     }
-
-// }
-// console.log(PositionArray[id]);
-// // console.log("first:", firstChoose, "second:", secondChoose, globalBol);
-// if (firstChoose != undefined && secondChoose != undefined) {
-//     console.log(firstChoose, secondChoose);
-//     tween(firstChoose, secondChoose,PositionArray, this);
-// }
